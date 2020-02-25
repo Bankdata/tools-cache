@@ -12,7 +12,6 @@ public class ObjectMapperFactory {
     public static ObjectMapper getInstance() {
         if (objectMapper == null) {
             objectMapper = new ObjectMapper();
-            objectMapper = new ObjectMapper();
             objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
             objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         }
