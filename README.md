@@ -1,8 +1,8 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.bankdata.jaxrs/security/badge.svg)](https://maven-badges.herokuapp.com/maven-central/dk.bankdata.jaxrs/security/)
-[![Javadoc](https://javadoc.io/badge/dk.bankdata.jaxrs/security/badge.svg)](https://www.javadoc.io/doc/dk.bankdata.jaxrs/security)
-[![Build Status](https://travis-ci.com/Bankdata/jaxrs-security.svg?branch=master)](https://travis-ci.com/Bankdata/jaxrs-security)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/dk.bankdata.jaxrs/security/badge.svg)](https://maven-badges.herokuapp.com/maven-central/dk.bankdata.tools/cache/)
+[![Javadoc](https://javadoc.io/badge/dk.bankdata.jaxrs/security/badge.svg)](https://www.javadoc.io/doc/dk.bankdata.tools/cache)
+[![Build Status](https://travis-ci.com/Bankdata/jaxrs-security.svg?branch=master)](https://travis-ci.com/Bankdata/tools-cache)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Known Vulnerabilities](https://snyk.io/test/github/Bankdata/jaxrs-security/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/Bankdata/jaxrs-security?targetFile=build.gradle)
+[![Known Vulnerabilities](https://snyk.io/test/github/Bankdata/jaxrs-security/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/Bankdata/tools-cache?targetFile=build.gradle)
 
 # Overview
 
