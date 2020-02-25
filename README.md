@@ -13,7 +13,7 @@ JWT (JWS) bearer tokens, doing simple encryption of values and more.
 ## Getting Started
 
 See how to add this library to your project here 
-https://search.maven.org/artifact/dk.bankdata.jaxrs/security
+https://search.maven.org/artifact/dk.bankdata.tools/cache
 
 ### Prerequisites
 
