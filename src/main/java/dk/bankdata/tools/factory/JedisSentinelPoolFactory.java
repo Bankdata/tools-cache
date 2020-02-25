@@ -14,8 +14,12 @@ public class JedisSentinelPoolFactory {
 
     public JedisSentinelPool getPool() {
         if (sentinelPool == null) {
-            sentinelPool = new JedisSentinelPool(environment.getMasterName(), environment.getSentinels(),
-                    environment.getPassword());
+            if (environment.getPassword() == null) {
+                sentinelPool = new JedisSentinelPool(environment.getMasterName(), environment.getSentinels());
+            } else {
+                sentinelPool = new JedisSentinelPool(environment.getMasterName(), environment.getSentinels(),
+                        environment.getPassword());
+            }
         }
 
         return sentinelPool;
