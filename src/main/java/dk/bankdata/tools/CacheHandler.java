@@ -7,6 +7,10 @@ public interface CacheHandler {
 
     void set(String key, String payload, int ttlInSeconds);
 
+    void set(String key, Object payload);
+
+    void set(String key, Object payload, int ttlInSeconds);
+
     void set(byte[] key, Serializable payload);
 
     void set(byte[] key, Serializable payload, int ttlInSeconds);

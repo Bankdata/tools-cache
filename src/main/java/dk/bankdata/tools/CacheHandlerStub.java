@@ -32,6 +32,29 @@ public class CacheHandlerStub implements CacheHandler {
     /**
      * Set a cache without expire time.
      * If the provided key exists then it will be overwritten
+     * @param key unique cache key
+     * @param payload item to cache
+     */
+    @Override
+    public void set(String key, Object payload) {
+        // Do nothing
+    }
+
+    /**
+     * Set a cache with with an expire time.
+     * If the provided key exists then it will be overwritten
+     * @param key unique cache key
+     * @param payload item to cache
+     * @param ttlInSeconds how many seconds should the payload be cached
+     */
+    @Override
+    public void set(String key, Object payload, int ttlInSeconds) {
+        // Do nothing
+    }
+
+    /**
+     * Set a cache without expire time.
+     * If the provided key exists then it will be overwritten
      * Utilizes SerializationUtils.serialize() to cache the payload
      * @param key unique cache key
      * @param payload item to cache
