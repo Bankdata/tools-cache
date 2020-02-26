@@ -46,7 +46,7 @@ The following environemnt variables needs to be present for this library to func
 - REDIS_PASSWORD - Password for Redis - omit if no password is needed
 - REDIS_PROFILE - Decides if redis is to run on a stub or on the server.
 
-Eksample:
+Example:
 ```
 export REDIS_MASTERNAME=redis-master
 export REDIS_SENTINELS=master-0:12345,slave-0:12345,slave-1:12345,slave:12345
@@ -54,7 +54,7 @@ export REDIS_PROFILE=server //Can be set to either `local` or `server`
 ```
 
 #### CacheHandler
-This is an example of how to use the library :
+This is a few examples of how to use the library :
 ``` java
 @ApplicationScoped
 public class ItemCacheHandler {
@@ -67,6 +67,21 @@ public class ItemCacheHandler {
 
     public Item getItemFromCache(String itemKey) {
         return cacheHandler.get(itemKey, Item.class);
+    }
+}
+```
+``` java
+@ApplicationScoped
+public class ItemCacheHandler {
+    @Inject
+    CacheHandler cacheHandler;
+
+    public void setInCache(String key, String payload) {
+        cacheHandler.set(keyey, payload);
+    }
+
+    public String getFromCache(String key) {
+        return cacheHandler.get(key);
     }
 }
 ```
