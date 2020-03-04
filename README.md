@@ -77,7 +77,7 @@ public class ItemCacheHandler {
     CacheHandler cacheHandler;
 
     public void setInCache(String key, String payload) {
-        cacheHandler.set(keyey, payload);
+        cacheHandler.set(key, payload);
     }
 
     public String getFromCache(String key) {
