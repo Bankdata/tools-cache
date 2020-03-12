@@ -28,6 +28,8 @@ repositories {
 
 dependencies {
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: project['com.fasterxml.jackson.version'])
+    compile(group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: project['com.fasterxml.jackson.version'])
+
     compile(group: 'javax.validation', name: 'validation-api', version: project['javax.validation.version'])
     compile(group: 'dk.bankdata.jaxrs', name: 'security', version: project['dk.bankdata.jaxrs.security.version'])
     compile(group: 'org.apache.commons', name: 'commons-lang3', version: project['org.apache.commons.lang.version'])
