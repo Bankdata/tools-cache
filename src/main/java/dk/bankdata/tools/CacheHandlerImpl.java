@@ -141,7 +141,6 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     public boolean exists(String key) {
         try (Jedis jedis = factory.getPool().getResource()) {
-
             return jedis.exists(key);
         } catch (Exception e) {
             throw createRunTimeException("Failed to check key [" + key + "] ", e);
@@ -155,7 +154,6 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     public boolean exists(byte[] key) {
         try (Jedis jedis = factory.getPool().getResource()) {
-
             return jedis.exists(key);
         } catch (Exception e) {
             throw createRunTimeException("Failed to check key [" + new String(key) + "] ", e);
@@ -173,6 +171,10 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     public String get(String key) {
         try (Jedis jedis = factory.getPool().getResource()) {
+            if (!jedis.exists(key)) {
+                return null;
+            }
+
             return jedis.get(key);
         } catch (Exception e) {
             throw createRunTimeException("Failed to get key [" + key + "]", e);
@@ -186,6 +188,10 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     public byte[] get(byte[] key) {
         try (Jedis jedis = factory.getPool().getResource()) {
+            if (!jedis.exists(key)) {
+                return null;
+            }
+
             return jedis.lpop(key);
         } catch (Exception e) {
             throw createRunTimeException("Failed to get key [" + new String(key) + "]", e);
@@ -201,6 +207,10 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     public <T> T get(String key, Class<T> classToReturn) {
         try (Jedis jedis = factory.getPool().getResource()) {
+            if (!jedis.exists(key)) {
+                return null;
+            }
+
             String payload = jedis.get(key);
             ObjectMapper om = ObjectMapperFactory.getInstance();
 
@@ -219,6 +229,9 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     public <T> T get(byte[] key, Class<T> classToReturn) {
         try (Jedis jedis = factory.getPool().getResource()) {
+            if (!jedis.exists(key)) {
+                return null;
+            }
 
             byte[] payload = jedis.lpop(key);
             ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
