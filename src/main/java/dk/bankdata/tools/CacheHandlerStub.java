@@ -1,6 +1,7 @@
 package dk.bankdata.tools;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 public class CacheHandlerStub implements CacheHandler {
 
@@ -106,8 +107,8 @@ public class CacheHandlerStub implements CacheHandler {
      * @param key key of the item
      * @return payload
      */
-    public String get(String key) {
-        return "";
+    public Optional<String> get(String key) {
+        return Optional.empty();
     }
 
     /**
@@ -115,29 +116,29 @@ public class CacheHandlerStub implements CacheHandler {
      * @param key key of the item
      * @return the cached bytes
      */
-    public byte[] get(byte[] key) {
-        return "".getBytes();
+    public Optional<byte[]> get(byte[] key) {
+        return Optional.empty();
     }
 
     /**
      * Get a cached item by key.
+     * @param <T> generic type
      * @param key key of the item
      * @param classToReturn the type of the returned class
-     * @param <T> generic type
      * @return the provided class object
      */
-    public <T> T get(String key, Class<T> classToReturn) {
+    public <T> Optional<T> get(String key, Class<T> classToReturn) {
         return null;
     }
 
     /**
      * Get a cached item by key.
+     * @param <T> generic type
      * @param key key of the item
      * @param classToReturn the type of the returned class
-     * @param <T> generic type
      * @return the provided class object
      */
-    public <T> T get(byte[] key, Class<T> classToReturn) {
+    public <T> Optional<T> get(byte[] key, Class<T> classToReturn) {
         return null;
     }
 

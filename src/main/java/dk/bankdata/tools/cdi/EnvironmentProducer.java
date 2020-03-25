@@ -10,14 +10,14 @@ public class EnvironmentProducer {
     @Produces
     public Environment create() {
         String masterName = loadSystemEnvironmentVariable("REDIS_MASTERNAME");
-        String password = System.getenv("REDIS_PASSWORD") == null ? null : loadSystemEnvironmentVariable("REDIS_PASSWORD");
+        String password = getSystemVariable("REDIS_PASSWORD") == null ? null : loadSystemEnvironmentVariable("REDIS_PASSWORD");
         String sentinels = loadSystemEnvironmentVariable("REDIS_SENTINELS");
-        String profile = System.getenv("REDIS_PROFILE") == null ? "server" : loadSystemEnvironmentVariable("REDIS_PROFILE");
+        String profile = getSystemVariable("REDIS_PROFILE") == null ? "server" : loadSystemEnvironmentVariable("REDIS_PROFILE");
 
         return new Environment(masterName, password, sentinels, profile);
     }
 
-    private String loadSystemEnvironmentVariable(String variableName) {
+    protected String loadSystemEnvironmentVariable(String variableName) {
         String value = System.getenv(variableName);
 
         if (value == null || value.isEmpty()) {
@@ -25,5 +25,9 @@ public class EnvironmentProducer {
         }
 
         return value;
+    }
+
+    protected String getSystemVariable(String variable) {
+        return System.getenv(variable);
     }
 }

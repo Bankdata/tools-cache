@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.bankdata.tools.factory.JedisSentinelPoolFactory;
 import dk.bankdata.tools.factory.ObjectMapperFactory;
 import java.io.Serializable;
+import java.util.Optional;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,13 +170,16 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param key key of the item
      * @return payload
      */
-    public String get(String key) {
+    public Optional<String> get(String key) {
         try (Jedis jedis = factory.getPool().getResource()) {
-            if (!jedis.exists(key)) {
-                return null;
+            Optional<String> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                String s = jedis.get(key);
+                result = Optional.ofNullable(s);
             }
 
-            return jedis.get(key);
+            return result;
         } catch (Exception e) {
             throw createRunTimeException("Failed to get key [" + key + "]", e);
         }
@@ -186,13 +190,16 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param key key of the item
      * @return the cached bytes
      */
-    public byte[] get(byte[] key) {
+    public Optional<byte[]> get(byte[] key) {
         try (Jedis jedis = factory.getPool().getResource()) {
-            if (!jedis.exists(key)) {
-                return null;
+            Optional<byte[]> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                byte[] bytes = jedis.lpop(key);
+                result = Optional.ofNullable(bytes);
             }
 
-            return jedis.lpop(key);
+            return result;
         } catch (Exception e) {
             throw createRunTimeException("Failed to get key [" + new String(key) + "]", e);
         }
@@ -200,21 +207,24 @@ public class CacheHandlerImpl implements CacheHandler {
 
     /**
      * Get a cached item by key.
+     * @param <T> generic type
      * @param key key of the item
      * @param classToReturn the type of the returned class
-     * @param <T> generic type
      * @return the provided class object
      */
-    public <T> T get(String key, Class<T> classToReturn) {
+    public <T> Optional<T> get(String key, Class<T> classToReturn) {
         try (Jedis jedis = factory.getPool().getResource()) {
-            if (!jedis.exists(key)) {
-                return null;
+            Optional<T> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                String payload = jedis.get(key);
+                ObjectMapper om = ObjectMapperFactory.getInstance();
+
+                T t = om.readValue(payload, classToReturn);
+                result = Optional.ofNullable(t);
             }
 
-            String payload = jedis.get(key);
-            ObjectMapper om = ObjectMapperFactory.getInstance();
-
-            return om.readValue(payload, classToReturn);
+            return result;
         } catch (Exception e) {
             throw createRunTimeException("Failed to get key [" + key + "]", e);
         }
@@ -222,21 +232,24 @@ public class CacheHandlerImpl implements CacheHandler {
 
     /**
      * Get a cached item by key.
+     * @param <T> generic type
      * @param key key of the item
      * @param classToReturn the type of the returned class
-     * @param <T> generic type
      * @return the provided class object
      */
-    public <T> T get(byte[] key, Class<T> classToReturn) {
+    public <T> Optional<T> get(byte[] key, Class<T> classToReturn) {
         try (Jedis jedis = factory.getPool().getResource()) {
-            if (!jedis.exists(key)) {
-                return null;
+            Optional<T> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                byte[] payload = jedis.lpop(key);
+                ObjectMapper om = ObjectMapperFactory.getInstance();
+
+                T t = om.readValue(payload, classToReturn);
+                result = Optional.ofNullable(t);
             }
 
-            byte[] payload = jedis.lpop(key);
-            ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
-
-            return objectMapper.readValue(payload, classToReturn);
+            return result;
         } catch (Exception e) {
             throw createRunTimeException("Failed to get key [" + new String(key) + "]", e);
         }

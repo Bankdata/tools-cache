@@ -1,6 +1,7 @@
 package dk.bankdata.tools;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 public interface CacheHandler {
     void set(String key, String payload);
@@ -19,13 +20,13 @@ public interface CacheHandler {
 
     boolean exists(byte[] key);
 
-    String get(String key);
+    Optional<String> get(String key);
 
-    byte[] get(byte[] key);
+    Optional<byte[]> get(byte[] key);
 
-    <T> T get(String key, Class<T> classToReturn);
+    <T> Optional<T> get(String key, Class<T> classToReturn);
 
-    <T> T get(byte[] key, Class<T> classToReturn);
+    <T> Optional<T> get(byte[] key, Class<T> classToReturn);
 
     void delete(String key);
 
