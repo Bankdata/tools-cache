@@ -128,7 +128,7 @@ public class CacheHandlerStub implements CacheHandler {
      * @return the provided class object
      */
     public <T> Optional<T> get(String key, Class<T> classToReturn) {
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -139,7 +139,7 @@ public class CacheHandlerStub implements CacheHandler {
      * @return the provided class object
      */
     public <T> Optional<T> get(byte[] key, Class<T> classToReturn) {
-        return null;
+        return Optional.empty();
     }
 
     //*************************************************************************************\\
