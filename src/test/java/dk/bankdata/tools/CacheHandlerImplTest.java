@@ -78,6 +78,26 @@ public class CacheHandlerImplTest {
     }
 
     @Test
+    public void shouldGetCacheObjectBytes() {
+        byte[] key = "some-key".getBytes();
+        byte[] value = "{\"testProp\":\"some-prop\"}".getBytes();
+
+        Jedis jedis = mock(Jedis.class);
+        when(jedis.exists(key)).thenReturn(true);
+        when(jedis.lpop(key)).thenReturn(value);
+
+        JedisSentinelPool jedisSentinelPool = mock(JedisSentinelPool.class);
+        when(jedisSentinelPool.getResource()).thenReturn(jedis);
+
+        when(jedisSentinelPoolFactory.getPool()).thenReturn(jedisSentinelPool);
+
+        Optional<TestObject> testObject = cacheHandler.get(key, TestObject.class);
+
+        Assert.assertTrue(testObject.isPresent());
+        Assert.assertEquals("some-prop", testObject.get().getTestProp());
+    }
+
+    @Test
     public void shouldGetCacheListOfObjects() {
         Jedis jedis = mock(Jedis.class);
         when(jedis.exists("some-key")).thenReturn(true);
