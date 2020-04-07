@@ -1,10 +1,14 @@
 package dk.bankdata.tools;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import dk.bankdata.tools.factory.JedisSentinelPoolFactory;
 import dk.bankdata.tools.factory.ObjectMapperFactory;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
@@ -34,6 +38,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param key unique cache key
      * @param object item to cache - Will be converted to json
      */
+    @Override
     public void set(String key, Object object) {
         try {
             ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
@@ -51,6 +56,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param object item to cache - Will be converted to json
      * @param ttlInSeconds how many seconds should the payload be cached
      */
+    @Override
     public void set(String key, Object object, int ttlInSeconds) {
         try {
             ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
@@ -67,6 +73,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param key unique cache key
      * @param payload item to cache
      */
+    @Override
     public void set(String key, String payload) {
         this.set(key, payload, 0);
     }
@@ -78,6 +85,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param payload item to cache
      * @param ttlInSeconds how many seconds should the payload be cached
      */
+    @Override
     public void set(String key, String payload, int ttlInSeconds) {
         try (Jedis jedis = factory.getPool().getResource()) {
 
@@ -102,6 +110,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param key unique cache key
      * @param payload item to cache
      */
+    @Override
     public void set(byte[] key, Serializable payload) {
         this.set(key, payload, 0);
     }
@@ -114,6 +123,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param payload item to cache
      * @param ttlInSeconds how many seconds should the payload be cached
      */
+    @Override
     public void set(byte[] key, Serializable payload, int ttlInSeconds) {
         try (Jedis jedis = factory.getPool().getResource()) {
 
@@ -131,6 +141,41 @@ public class CacheHandlerImpl implements CacheHandler {
         }
     }
 
+    /**
+     * Set a cache with expire time.
+     * If the provided key exists then it will be overwritten
+     * @param key unique cache key
+     * @param payload list of items to cache
+     */
+    @Override
+    public void set(String key, List<Object> payload) {
+        try {
+            ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
+            String json = objectMapper.writeValueAsString(payload);
+            this.set(key, json);
+        } catch (JsonProcessingException e) {
+            throw createRunTimeException("Unable to process object list - Error was " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Set a cache with expire time.
+     * If the provided key exists then it will be overwritten
+     * @param key unique cache key
+     * @param payload list of items to cache
+     * @param ttlInSeconds how many seconds should the payload be cached
+     */
+    @Override
+    public void set(String key, List<Object> payload, int ttlInSeconds) {
+        try {
+            ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
+            String json = objectMapper.writeValueAsString(payload);
+            this.set(key, json, ttlInSeconds);
+        } catch (JsonProcessingException e) {
+            throw createRunTimeException("Unable to process object list - Error was " + e.getMessage(), e);
+        }
+    }
+
     //*************************************************************************************\\
     //******************************* EXISTS IN CACHE *************************************\\
     //*************************************************************************************\\
@@ -140,6 +185,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param key key to check
      * @return true if exists or else false
      */
+    @Override
     public boolean exists(String key) {
         try (Jedis jedis = factory.getPool().getResource()) {
             return jedis.exists(key);
@@ -153,6 +199,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param key key to check
      * @return true if exists or else false
      */
+    @Override
     public boolean exists(byte[] key) {
         try (Jedis jedis = factory.getPool().getResource()) {
             return jedis.exists(key);
@@ -170,6 +217,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param key key of the item
      * @return payload
      */
+    @Override
     public Optional<String> get(String key) {
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<String> result = Optional.empty();
@@ -190,6 +238,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param key key of the item
      * @return the cached bytes
      */
+    @Override
     public Optional<byte[]> get(byte[] key) {
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<byte[]> result = Optional.empty();
@@ -212,6 +261,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param classToReturn the type of the returned class
      * @return the provided class object
      */
+    @Override
     public <T> Optional<T> get(String key, Class<T> classToReturn) {
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<T> result = Optional.empty();
@@ -237,6 +287,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param classToReturn the type of the returned class
      * @return the provided class object
      */
+    @Override
     public <T> Optional<T> get(byte[] key, Class<T> classToReturn) {
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<T> result = Optional.empty();
@@ -255,6 +306,26 @@ public class CacheHandlerImpl implements CacheHandler {
         }
     }
 
+    @Override
+    public <T> Optional<List<T>> getList(String key, Class<T> classInList) {
+        try (Jedis jedis = factory.getPool().getResource()) {
+            Optional<List<T>> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                String payload = jedis.get(key);
+                ObjectMapper om = ObjectMapperFactory.getInstance();
+                TypeFactory typeFactory = TypeFactory.defaultInstance();
+                List<T> t = om.readValue(payload, typeFactory.constructCollectionType(List.class, classInList));
+
+                result = Optional.ofNullable(t);
+            }
+
+            return result;
+        } catch (Exception e) {
+            throw createRunTimeException("Failed to get key [" + key + "]", e);
+        }
+    }
+
     //*************************************************************************************\\
     //******************************* REMOVE FROM CACHE ***********************************\\
     //*************************************************************************************\\
@@ -263,6 +334,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * Removes a cached item.
      * @param key the key to delete
      */
+    @Override
     public void delete(String key) {
         try (Jedis jedis = factory.getPool().getResource()) {
 
@@ -276,6 +348,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * Removes a cached item.
      * @param key the key to delete
      */
+    @Override
     public void delete(byte[] key) {
         try (Jedis jedis = factory.getPool().getResource()) {
 
