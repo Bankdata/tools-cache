@@ -356,6 +356,16 @@ public class CacheHandlerImpl implements CacheHandler {
         }
     }
 
+    /**
+     * Should be called a service startup to prevent thread overflow.
+     */
+    @Override
+    public void initialization() {
+        try (Jedis jedis = factory.getPool().getResource()) {
+            jedis.exists("Initialization-key");
+        }
+    }
+
     private RuntimeException createRunTimeException(String message, Throwable t) {
         String errorMessage = t.getCause() == null ? t.getMessage() : t.getMessage() + " || " +
                 t.getCause().getMessage();

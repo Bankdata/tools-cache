@@ -209,4 +209,13 @@ public class CacheHandlerStub implements CacheHandler {
     public void delete(byte[] key) {
         // Do nothing
     }
+
+    /**
+     * Should be called a service startup to prevent thread overflow.
+     */
+    @Override
+    public void initialization() {
+        //Do nothing
+    }
+
 }

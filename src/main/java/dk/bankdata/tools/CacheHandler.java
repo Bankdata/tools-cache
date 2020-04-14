@@ -38,4 +38,6 @@ public interface CacheHandler {
     void delete(String key);
 
     void delete(byte[] key);
+
+    void initialization();
 }
