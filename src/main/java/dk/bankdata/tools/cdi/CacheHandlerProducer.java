@@ -24,6 +24,9 @@ public class CacheHandlerProducer {
             return new CacheHandlerStub();
         }
 
-        return new CacheHandlerImpl(jedisSentinelPoolFactory);
+        CacheHandlerImpl cacheHandler = new CacheHandlerImpl(jedisSentinelPoolFactory);
+        cacheHandler.exists("initialize-cache-threads");
+
+        return cacheHandler;
     }
 }
