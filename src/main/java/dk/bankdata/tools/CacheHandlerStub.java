@@ -214,7 +214,7 @@ public class CacheHandlerStub implements CacheHandler {
      * Should be called a service startup to prevent thread overflow.
      */
     @Override
-    public void initialization() {
+    public void initialize() {
         //Do nothing
     }
 

@@ -39,5 +39,5 @@ public interface CacheHandler {
 
     void delete(byte[] key);
 
-    void initialization();
+    void initialize();
 }
