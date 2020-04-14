@@ -357,8 +357,7 @@ public class CacheHandlerImpl implements CacheHandler {
     }
 
     /**
-     * Should be called a service startup to prevent thread overflow
-     *
+     * Should be called a service startup to prevent thread overflow.
      */
     @Override
     public void initialization() {
