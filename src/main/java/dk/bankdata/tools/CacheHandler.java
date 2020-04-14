@@ -1,6 +1,7 @@
 package dk.bankdata.tools;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 
 public interface CacheHandler {
@@ -16,6 +17,10 @@ public interface CacheHandler {
 
     void set(byte[] key, Serializable payload, int ttlInSeconds);
 
+    void set(String key, List<Object> payload);
+
+    void set(String key, List<Object> payload, int ttlInSeconds);
+
     boolean exists(String key);
 
     boolean exists(byte[] key);
@@ -28,7 +33,11 @@ public interface CacheHandler {
 
     <T> Optional<T> get(byte[] key, Class<T> classToReturn);
 
+    <T> Optional<List<T>> getList(String key, Class<T> classInList);
+
     void delete(String key);
 
     void delete(byte[] key);
+
+    void initialization();
 }

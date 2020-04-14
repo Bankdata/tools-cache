@@ -6,9 +6,7 @@
 
 # Overview
 
-This project contains some simple utilities related to building JAX-RS bases
-REST services. The contents are centered around security, e.g., validation
-JWT (JWS) bearer tokens, doing simple encryption of values and more.
+This project contains some helpful functions when working with a redis sentinel setup for cacheing.
 
 ## Getting Started
 
@@ -54,12 +52,12 @@ export REDIS_PROFILE=server //Can be set to either `local` or `server`
 ```
 
 #### CacheHandler
-This is a few examples of how to use the library :
+This is a few examples of how to use some of the library :
 ``` java
 @ApplicationScoped
 public class ItemCacheHandler {
     @Inject
-    CacheHandler cacheHandler;
+    private CacheHandler cacheHandler;
 
     public void setItemInCache(String itemKey, Item item) {
         cacheHandler.set(itemKey, item);
@@ -74,7 +72,7 @@ public class ItemCacheHandler {
 @ApplicationScoped
 public class ItemCacheHandler {
     @Inject
-    CacheHandler cacheHandler;
+    private CacheHandler cacheHandler;
 
     public void setInCache(String key, String payload) {
         cacheHandler.set(key, payload);
@@ -82,6 +80,21 @@ public class ItemCacheHandler {
 
     public String getFromCache(String key) {
         return cacheHandler.get(key);
+    }
+}
+```
+``` java
+@ApplicationScoped
+public class ItemCacheHandler {
+    @Inject
+    private CacheHandler cacheHandler;
+
+    public void setInCache(String key, List<Item> payload) {
+        cacheHandler.set(key, payload);
+    }
+
+    public List<Item> getFromCache(String key) {
+        return cacheHandler.getList(key, Item.class);
     }
 }
 ```
