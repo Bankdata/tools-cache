@@ -47,7 +47,7 @@ public class CacheHandlerImplTest {
 
         Jedis jedis = mock(Jedis.class);
         when(jedis.exists("some-key".getBytes())).thenReturn(true);
-        when(jedis.lpop("some-key".getBytes())).thenReturn(bytes);
+        when(jedis.get("some-key".getBytes())).thenReturn(bytes);
 
         JedisSentinelPool jedisSentinelPool = mock(JedisSentinelPool.class);
         when(jedisSentinelPool.getResource()).thenReturn(jedis);
