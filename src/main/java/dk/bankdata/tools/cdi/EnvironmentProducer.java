@@ -1,6 +1,7 @@
 package dk.bankdata.tools.cdi;
 
 import dk.bankdata.tools.domain.Environment;
+import dk.bankdata.tools.domain.Profile;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
@@ -9,10 +10,17 @@ public class EnvironmentProducer {
 
     @Produces
     public Environment create() {
-        String masterName = loadSystemEnvironmentVariable("REDIS_MASTERNAME");
-        String password = getSystemVariable("REDIS_PASSWORD") == null ? null : loadSystemEnvironmentVariable("REDIS_PASSWORD");
-        String sentinels = loadSystemEnvironmentVariable("REDIS_SENTINELS");
+        String masterName = "";
+        String password = null;
+        String sentinels = "";
+
         String profile = getSystemVariable("REDIS_PROFILE") == null ? "server" : loadSystemEnvironmentVariable("REDIS_PROFILE");
+
+        if (Profile.fromString(profile).equals(Profile.SERVER)) {
+            masterName = loadSystemEnvironmentVariable("REDIS_MASTERNAME");
+            password = getSystemVariable("REDIS_PASSWORD") == null ? null : loadSystemEnvironmentVariable("REDIS_PASSWORD");
+            sentinels = loadSystemEnvironmentVariable("REDIS_SENTINELS");
+        }
 
         return new Environment(masterName, password, sentinels, profile);
     }

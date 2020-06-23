@@ -63,24 +63,14 @@ public class EnvironmentProducerTest {
 
     @Test
     public void shouldCreateEnvironmentWithLocalProfile() {
-        doReturn("some-password").when(producer).getSystemVariable("REDIS_PASSWORD");
         doReturn("local").when(producer).getSystemVariable("REDIS_PROFILE");
-
-        doReturn("some-master").when(producer).loadSystemEnvironmentVariable("REDIS_MASTERNAME");
-        doReturn("some-password").when(producer).loadSystemEnvironmentVariable("REDIS_PASSWORD");
-        doReturn("some-sentinel-1:123,some-sentinel-2:456").when(producer).loadSystemEnvironmentVariable("REDIS_SENTINELS");
         doReturn("local").when(producer).loadSystemEnvironmentVariable("REDIS_PROFILE");
 
         Environment environment = producer.create();
 
-        Set<String> sentinels = new HashSet<>();
-        sentinels.add("some-sentinel-1:123");
-        sentinels.add("some-sentinel-2:456");
-
-        Assert.assertEquals("some-master", environment.getMasterName());
-        Assert.assertEquals("some-password", environment.getPassword());
-        Assert.assertEquals(sentinels, environment.getSentinels());
+        Assert.assertEquals("", environment.getMasterName());
+        Assert.assertEquals(null, environment.getPassword());
+        Assert.assertEquals(1, environment.getSentinels().size());
         Assert.assertEquals(Profile.LOCAL, environment.getProfile());
     }
-
 }

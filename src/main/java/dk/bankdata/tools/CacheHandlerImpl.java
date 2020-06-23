@@ -33,7 +33,20 @@ public class CacheHandlerImpl implements CacheHandler {
     /**
      * Set a cache without expire time.
      * If the provided key exists then it will be overwritten
-     * @param key unique cache key
+     *
+     * @param key     unique cache key
+     * @param payload item to cache
+     */
+    @Override
+    public void set(String key, String payload) {
+        this.set(key, payload, 0);
+    }
+
+    /**
+     * Set a cache without expire time.
+     * If the provided key exists then it will be overwritten
+     *
+     * @param key    unique cache key
      * @param object item to cache - Will be converted to json
      */
     @Override
@@ -50,37 +63,9 @@ public class CacheHandlerImpl implements CacheHandler {
     /**
      * Set a cache with with an expire time.
      * If the provided key exists then it will be overwritten
-     * @param key unique cache key
-     * @param object item to cache - Will be converted to json
-     * @param ttlInSeconds how many seconds should the payload be cached
-     */
-    @Override
-    public void set(String key, Object object, int ttlInSeconds) {
-        try {
-            ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
-            String payload = objectMapper.writeValueAsString(object);
-            this.set(key, payload, ttlInSeconds);
-        } catch (JsonProcessingException e) {
-            throw createRunTimeException("Unable to process object - Error was " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Set a cache without expire time.
-     * If the provided key exists then it will be overwritten
-     * @param key unique cache key
-     * @param payload item to cache
-     */
-    @Override
-    public void set(String key, String payload) {
-        this.set(key, payload, 0);
-    }
-
-    /**
-     * Set a cache with with an expire time.
-     * If the provided key exists then it will be overwritten
-     * @param key unique cache key
-     * @param payload item to cache
+     *
+     * @param key          unique cache key
+     * @param payload      item to cache
      * @param ttlInSeconds how many seconds should the payload be cached
      */
     @Override
@@ -102,23 +87,31 @@ public class CacheHandlerImpl implements CacheHandler {
     }
 
     /**
-     * Set a cache without expire time.
+     * Set a cache with with an expire time.
      * If the provided key exists then it will be overwritten
-     * Utilizes SerializationUtils.serialize() to cache the payload
-     * @param key unique cache key
-     * @param payload item to cache
+     *
+     * @param key          unique cache key
+     * @param object       item to cache - Will be converted to json
+     * @param ttlInSeconds how many seconds should the payload be cached
      */
     @Override
-    public void set(byte[] key, Serializable payload) {
-        this.set(key, payload, 0);
+    public void set(String key, Object object, int ttlInSeconds) {
+        try {
+            ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
+            String payload = objectMapper.writeValueAsString(object);
+            this.set(key, payload, ttlInSeconds);
+        } catch (JsonProcessingException e) {
+            throw createRunTimeException("Unable to process object - Error was " + e.getMessage(), e);
+        }
     }
 
     /**
      * Set a cache with expire time.
      * If the provided key exists then it will be overwritten
      * Utilizes SerializationUtils.serialize() to cache the payload
-     * @param key unique cache key
-     * @param payload item to cache
+     *
+     * @param key          unique cache key
+     * @param payload      item to cache
      * @param ttlInSeconds how many seconds should the payload be cached
      */
     @Override
@@ -129,7 +122,7 @@ public class CacheHandlerImpl implements CacheHandler {
                 jedis.del(key);
             }
 
-            jedis.rpush(key, SerializationUtils.serialize(payload));
+            jedis.set(key, SerializationUtils.serialize(payload));
 
             if (ttlInSeconds != 0) {
                 jedis.expire(key, ttlInSeconds);
@@ -142,7 +135,8 @@ public class CacheHandlerImpl implements CacheHandler {
     /**
      * Set a cache with expire time.
      * If the provided key exists then it will be overwritten
-     * @param key unique cache key
+     *
+     * @param key     unique cache key
      * @param payload list of items to cache
      */
     @Override
@@ -159,8 +153,9 @@ public class CacheHandlerImpl implements CacheHandler {
     /**
      * Set a cache with expire time.
      * If the provided key exists then it will be overwritten
-     * @param key unique cache key
-     * @param payload list of items to cache
+     *
+     * @param key          unique cache key
+     * @param payload      list of items to cache
      * @param ttlInSeconds how many seconds should the payload be cached
      */
     @Override
@@ -174,12 +169,112 @@ public class CacheHandlerImpl implements CacheHandler {
         }
     }
 
+    /**
+     * Set a cache without expire time.
+     * If the provided key exists then it will be overwritten
+     * Utilizes SerializationUtils.serialize() to cache the payload
+     *
+     * @param key     unique cache key
+     * @param payload item to cache
+     */
+    @Override
+    public void set(byte[] key, Serializable payload) {
+        this.set(key, payload, 0);
+    }
+
+    /**
+     * Set a cache with with an expire time.
+     * If the provided key exists then it will be overwritten
+     *
+     * @param key     unique cache key
+     * @param payload item to cache - Will be converted to json
+     */
+    @Override
+    public void rpush(String key, String payload) {
+        try (Jedis jedis = factory.getPool().getResource()) {
+            if (jedis.exists(key)) {
+                jedis.del(key);
+            }
+
+            jedis.rpush(key, payload);
+        } catch (Exception e) {
+            throw createRunTimeException("Failed to set key [" + key + "] ", e);
+        }
+    }
+
+    /**
+     * Set a cache with with an expire time.
+     * If the provided key exists then it will be overwritten
+     *
+     * @param key    unique cache key
+     * @param object item to cache - Will be converted to json
+     */
+    @Override
+    public void rpush(String key, Object object) {
+        try (Jedis jedis = factory.getPool().getResource()) {
+            if (jedis.exists(key)) {
+                jedis.del(key);
+            }
+
+            ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
+            String payload = objectMapper.writeValueAsString(object);
+
+            jedis.rpush(key, payload);
+        } catch (Exception e) {
+            throw createRunTimeException("Failed to set key [" + key + "] ", e);
+        }
+    }
+
+    /**
+     * Set a cache with with an expire time.
+     * If the provided key exists then it will be overwritten
+     *
+     * @param key     unique cache key
+     * @param payload item to cache - Will be converted to json
+     */
+    @Override
+    public void lpush(String key, String payload) {
+        try (Jedis jedis = factory.getPool().getResource()) {
+            if (jedis.exists(key)) {
+                jedis.del(key);
+            }
+
+            jedis.lpush(key, payload);
+        } catch (Exception e) {
+            throw createRunTimeException("Failed to set key [" + key + "] ", e);
+        }
+    }
+
+    /**
+     * Set a cache with with an expire time.
+     * If the provided key exists then it will be overwritten
+     *
+     * @param key    unique cache key
+     * @param object item to cache - Will be converted to json
+     */
+    @Override
+    public void lpush(String key, Object object) {
+        try (Jedis jedis = factory.getPool().getResource()) {
+            if (jedis.exists(key)) {
+                jedis.del(key);
+            }
+
+            ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
+            String payload = objectMapper.writeValueAsString(object);
+
+            jedis.lpush(key, payload);
+        } catch (Exception e) {
+            throw createRunTimeException("Failed to set key [" + key + "] ", e);
+        }
+    }
+
     //*************************************************************************************\\
     //******************************* EXISTS IN CACHE *************************************\\
     //*************************************************************************************\\
 
     /**
      * Check to see if the cache contains the provided key.
+     *
      * @param key key to check
      * @return true if exists or else false
      */
@@ -194,6 +289,7 @@ public class CacheHandlerImpl implements CacheHandler {
 
     /**
      * Check to see if the cache contains the provided key.
+     *
      * @param key key to check
      * @return true if exists or else false
      */
@@ -212,6 +308,7 @@ public class CacheHandlerImpl implements CacheHandler {
 
     /**
      * Get a cached item by key.
+     *
      * @param key key of the item
      * @return payload
      */
@@ -233,6 +330,7 @@ public class CacheHandlerImpl implements CacheHandler {
 
     /**
      * Get a cached item by key.
+     *
      * @param key key of the item
      * @return the cached bytes
      */
@@ -242,7 +340,7 @@ public class CacheHandlerImpl implements CacheHandler {
             Optional<byte[]> result = Optional.empty();
 
             if (jedis.exists(key)) {
-                byte[] bytes = jedis.lpop(key);
+                byte[] bytes = jedis.get(key);
                 result = Optional.ofNullable(bytes);
             }
 
@@ -254,8 +352,9 @@ public class CacheHandlerImpl implements CacheHandler {
 
     /**
      * Get a cached item by key.
-     * @param <T> generic type
-     * @param key key of the item
+     *
+     * @param <T>           generic type
+     * @param key           key of the item
      * @param classToReturn the type of the returned class
      * @return the provided class object
      */
@@ -280,8 +379,9 @@ public class CacheHandlerImpl implements CacheHandler {
 
     /**
      * Get a cached item by key.
-     * @param <T> generic type
-     * @param key key of the item
+     *
+     * @param <T>           generic type
+     * @param key           key of the item
      * @param classToReturn the type of the returned class
      * @return the provided class object
      */
@@ -324,12 +424,109 @@ public class CacheHandlerImpl implements CacheHandler {
         }
     }
 
+    /**
+     * Get a cached item by key.
+     *
+     * @param key key of the item
+     * @return the provided class object
+     */
+    @Override
+    public Optional<String> rpop(String key) {
+        return Optional.empty();
+    }
+
+    /**
+     * Get a cached item by key.
+     *
+     * @param key key of the item
+     * @return the provided class object
+     */
+    @Override
+    public Optional<byte[]> rpop(byte[] key) {
+        return Optional.empty();
+    }
+
+    /**
+     * Get a cached item by key.
+     *
+     * @param <T>           generic type
+     * @param key           key of the item
+     * @param classToReturn the type of the returned class
+     * @return the provided class object
+     */
+    @Override
+    public <T> Optional<T> rpop(String key, Class<T> classToReturn) {
+        return Optional.empty();
+    }
+
+    /**
+     * Get a cached item by key.
+     *
+     * @param <T>           generic type
+     * @param key           key of the item
+     * @param classToReturn the type of the returned class
+     * @return the provided class object
+     */
+    @Override
+    public <T> Optional<T> rpop(byte[] key, Class<T> classToReturn) {
+        return Optional.empty();
+    }
+
+    /**
+     * Get a cached item by key.
+     *
+     * @param key key of the item
+     * @return the provided class object
+     */
+    @Override
+    public Optional<String> lpop(String key) {
+        return Optional.empty();
+    }
+
+    /**
+     * Get a cached item by key.
+     *
+     * @param key key of the item
+     * @return the provided class object
+     */
+    @Override
+    public Optional<byte[]> lpop(byte[] key) {
+        return Optional.empty();
+    }
+
+    /**
+     * Get a cached item by key.
+     *
+     * @param <T>           generic type
+     * @param key           key of the item
+     * @param classToReturn the type of the returned class
+     * @return the provided class object
+     */
+    @Override
+    public <T> Optional<T> lpop(String key, Class<T> classToReturn) {
+        return Optional.empty();
+    }
+
+    /**
+     * Get a cached item by key.
+     *
+     * @param <T>           generic type
+     * @param key           key of the item
+     * @param classToReturn the type of the returned class
+     * @return the provided class object
+     */
+    @Override
+    public <T> Optional<T> lpop(byte[] key, Class<T> classToReturn) {
+        return Optional.empty();
+    }
+
     //*************************************************************************************\\
     //******************************* REMOVE FROM CACHE ***********************************\\
     //*************************************************************************************\\
 
     /**
      * Removes a cached item.
+     *
      * @param key the key to delete
      */
     @Override
@@ -344,6 +541,7 @@ public class CacheHandlerImpl implements CacheHandler {
 
     /**
      * Removes a cached item.
+     *
      * @param key the key to delete
      */
     @Override
@@ -368,7 +566,7 @@ public class CacheHandlerImpl implements CacheHandler {
 
     private RuntimeException createRunTimeException(String message, Throwable t) {
         String errorMessage = t.getCause() == null ? t.getMessage() : t.getMessage() + " || " +
-                t.getCause().getMessage();
+            t.getCause().getMessage();
 
         LOG.error(message + " / " + errorMessage, t);
 

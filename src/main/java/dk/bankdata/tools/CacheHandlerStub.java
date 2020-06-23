@@ -10,6 +10,26 @@ public class CacheHandlerStub implements CacheHandler {
     //******************************* INSERT INTO CACHE ***********************************\\
     //*************************************************************************************\\
 
+    @Override
+    public void rpush(String key, String payload) {
+        // Do nothing
+    }
+
+    @Override
+    public void rpush(String key, Object payload) {
+        // Do nothing
+    }
+
+    @Override
+    public void lpush(String key, String payload) {
+        // Do nothing
+    }
+
+    @Override
+    public void lpush(String key, Object payload) {
+        // Do nothing
+    }
+
     /**
      * Set a cache without expire time.
      * If the provided key exists then it will be overwritten
@@ -185,6 +205,46 @@ public class CacheHandlerStub implements CacheHandler {
      */
     @Override
     public <T> Optional<List<T>> getList(String key, Class<T> classInList) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> rpop(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<byte[]> rpop(byte[] key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public <T> Optional<T> rpop(String key, Class<T> classToReturn) {
+        return Optional.empty();
+    }
+
+    @Override
+    public <T> Optional<T> rpop(byte[] key, Class<T> classToReturn) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> lpop(String key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<byte[]> lpop(byte[] key) {
+        return Optional.empty();
+    }
+
+    @Override
+    public <T> Optional<T> lpop(String key, Class<T> classToReturn) {
+        return Optional.empty();
+    }
+
+    @Override
+    public <T> Optional<T> lpop(byte[] key, Class<T> classToReturn) {
         return Optional.empty();
     }
 
