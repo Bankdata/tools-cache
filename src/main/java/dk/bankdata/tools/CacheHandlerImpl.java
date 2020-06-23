@@ -269,6 +269,38 @@ public class CacheHandlerImpl implements CacheHandler {
     }
 
     //*************************************************************************************\\
+    //******************************* LENGTHS IN CACHE ************************************\\
+    //*************************************************************************************\\
+
+
+    @Override
+    public long llen(String key) {
+        try (Jedis jedis = factory.getPool().getResource()) {
+            if (jedis.exists(key)) {
+                return jedis.llen(key);
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            throw createRunTimeException("Failed to get llen for key [" + key + "] ", e);
+        }
+    }
+
+    @Override
+    public long llen(byte[] key) {
+        try (Jedis jedis = factory.getPool().getResource()) {
+            if (jedis.exists(key)) {
+                return jedis.llen(key);
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            throw createRunTimeException("Failed to get llen for key [" + new String(key) + "] ", e);
+        }
+    }
+
+
+    //*************************************************************************************\\
     //******************************* EXISTS IN CACHE *************************************\\
     //*************************************************************************************\\
 

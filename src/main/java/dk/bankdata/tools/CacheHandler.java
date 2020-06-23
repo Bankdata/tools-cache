@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CacheHandler {
+    long llen(String key);
+
+    long llen(byte[] key);
+
     void rpush(String key, String payload);
 
     void rpush(String key, Object payload);

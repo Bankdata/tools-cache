@@ -11,6 +11,16 @@ public class CacheHandlerStub implements CacheHandler {
     //*************************************************************************************\\
 
     @Override
+    public long llen(String key) {
+        return 0;
+    }
+
+    @Override
+    public long llen(byte[] key) {
+        return 0;
+    }
+
+    @Override
     public void rpush(String key, String payload) {
         // Do nothing
     }
