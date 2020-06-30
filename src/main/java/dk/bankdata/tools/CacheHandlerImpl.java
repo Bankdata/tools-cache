@@ -406,7 +406,7 @@ public class CacheHandlerImpl implements CacheHandler {
 
             return result;
         } catch (Exception e) {
-            if(payload != null) {
+            if (payload != null) {
                 LOG.debug("Failed to parse key [" + key + "] with value [" + payload + "]");
             }
             throw createRunTimeException("Failed to get key [" + key + "]", e);
@@ -437,7 +437,7 @@ public class CacheHandlerImpl implements CacheHandler {
 
             return result;
         } catch (Exception e) {
-            if(payload != null) {
+            if (payload != null) {
                 LOG.debug("Failed to parse key [" + key + "] with value [" + payload.toString() + "]");
             }
             throw createRunTimeException("Failed to get key [" + new String(key) + "]", e);
@@ -461,7 +461,7 @@ public class CacheHandlerImpl implements CacheHandler {
 
             return result;
         } catch (Exception e) {
-            if(payload != null) {
+            if (payload != null) {
                 LOG.debug("Failed to parse key [" + key + "] with value [" + payload.toString() + "]");
             }
             throw createRunTimeException("Failed to get key [" + key + "]", e);
@@ -476,7 +476,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<String> rpop(String key) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -487,7 +487,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<byte[]> rpop(byte[] key) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -500,7 +500,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> rpop(String key, Class<T> classToReturn) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -513,7 +513,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> rpop(byte[] key, Class<T> classToReturn) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -524,7 +524,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<String> lpop(String key) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -535,7 +535,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<byte[]> lpop(byte[] key) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -548,7 +548,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> lpop(String key, Class<T> classToReturn) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -561,7 +561,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> lpop(byte[] key, Class<T> classToReturn) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     //*************************************************************************************\\
