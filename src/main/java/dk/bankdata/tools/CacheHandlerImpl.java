@@ -428,7 +428,7 @@ public class CacheHandlerImpl implements CacheHandler {
             Optional<T> result = Optional.empty();
 
             if (jedis.exists(key)) {
-                payload = jedis.lpop(key);
+                payload = jedis.get(key);
                 ObjectMapper om = ObjectMapperFactory.getInstance();
 
                 T t = om.readValue(payload, classToReturn);
@@ -476,7 +476,18 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<String> rpop(String key) {
-        throw new UnsupportedOperationException();
+        try (Jedis jedis = factory.getPool().getResource()) {
+            Optional<String> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                String s = jedis.rpop(key);
+                result = Optional.ofNullable(s);
+            }
+
+            return result;
+        } catch (Exception e) {
+            throw createRunTimeException("Failed to get key [" + key + "]", e);
+        }
     }
 
     /**
@@ -487,7 +498,18 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<byte[]> rpop(byte[] key) {
-        throw new UnsupportedOperationException();
+        try (Jedis jedis = factory.getPool().getResource()) {
+            Optional<byte[]> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                byte[] bytes = jedis.rpop(key);
+                result = Optional.ofNullable(bytes);
+            }
+
+            return result;
+        } catch (Exception e) {
+            throw createRunTimeException("Failed to get key [" + new String(key) + "]", e);
+        }
     }
 
     /**
@@ -500,7 +522,25 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> rpop(String key, Class<T> classToReturn) {
-        throw new UnsupportedOperationException();
+        String payload = null;
+        try (Jedis jedis = factory.getPool().getResource()) {
+            Optional<T> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                payload = jedis.rpop(key);
+                ObjectMapper om = ObjectMapperFactory.getInstance();
+
+                T t = om.readValue(payload, classToReturn);
+                result = Optional.ofNullable(t);
+            }
+
+            return result;
+        } catch (Exception e) {
+            if (payload != null) {
+                LOG.debug("Failed to parse key [" + key + "] with value [" + payload + "]");
+            }
+            throw createRunTimeException("Failed to get key [" + key + "]", e);
+        }
     }
 
     /**
@@ -513,7 +553,25 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> rpop(byte[] key, Class<T> classToReturn) {
-        throw new UnsupportedOperationException();
+        byte[] payload = null;
+        try (Jedis jedis = factory.getPool().getResource()) {
+            Optional<T> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                payload = jedis.rpop(key);
+                ObjectMapper om = ObjectMapperFactory.getInstance();
+
+                T t = om.readValue(payload, classToReturn);
+                result = Optional.ofNullable(t);
+            }
+
+            return result;
+        } catch (Exception e) {
+            if (payload != null) {
+                LOG.debug("Failed to parse key [" + key + "] with value [" + payload.toString() + "]");
+            }
+            throw createRunTimeException("Failed to get key [" + new String(key) + "]", e);
+        }
     }
 
     /**
@@ -524,7 +582,18 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<String> lpop(String key) {
-        throw new UnsupportedOperationException();
+        try (Jedis jedis = factory.getPool().getResource()) {
+            Optional<String> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                String s = jedis.lpop(key);
+                result = Optional.ofNullable(s);
+            }
+
+            return result;
+        } catch (Exception e) {
+            throw createRunTimeException("Failed to get key [" + key + "]", e);
+        }
     }
 
     /**
@@ -535,7 +604,18 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<byte[]> lpop(byte[] key) {
-        throw new UnsupportedOperationException();
+        try (Jedis jedis = factory.getPool().getResource()) {
+            Optional<byte[]> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                byte[] bytes = jedis.lpop(key);
+                result = Optional.ofNullable(bytes);
+            }
+
+            return result;
+        } catch (Exception e) {
+            throw createRunTimeException("Failed to get key [" + new String(key) + "]", e);
+        }
     }
 
     /**
@@ -548,7 +628,25 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> lpop(String key, Class<T> classToReturn) {
-        throw new UnsupportedOperationException();
+        String payload = null;
+        try (Jedis jedis = factory.getPool().getResource()) {
+            Optional<T> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                payload = jedis.lpop(key);
+                ObjectMapper om = ObjectMapperFactory.getInstance();
+
+                T t = om.readValue(payload, classToReturn);
+                result = Optional.ofNullable(t);
+            }
+
+            return result;
+        } catch (Exception e) {
+            if (payload != null) {
+                LOG.debug("Failed to parse key [" + key + "] with value [" + payload + "]");
+            }
+            throw createRunTimeException("Failed to get key [" + key + "]", e);
+        }
     }
 
     /**
@@ -561,7 +659,25 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> lpop(byte[] key, Class<T> classToReturn) {
-        throw new UnsupportedOperationException();
+        byte[] payload = null;
+        try (Jedis jedis = factory.getPool().getResource()) {
+            Optional<T> result = Optional.empty();
+
+            if (jedis.exists(key)) {
+                payload = jedis.lpop(key);
+                ObjectMapper om = ObjectMapperFactory.getInstance();
+
+                T t = om.readValue(payload, classToReturn);
+                result = Optional.ofNullable(t);
+            }
+
+            return result;
+        } catch (Exception e) {
+            if (payload != null) {
+                LOG.debug("Failed to parse key [" + key + "] with value [" + payload.toString() + "]");
+            }
+            throw createRunTimeException("Failed to get key [" + new String(key) + "]", e);
+        }
     }
 
     //*************************************************************************************\\
