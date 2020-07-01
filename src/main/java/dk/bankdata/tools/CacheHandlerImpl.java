@@ -392,11 +392,12 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> get(String key, Class<T> classToReturn) {
+        String payload = null;
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<T> result = Optional.empty();
 
             if (jedis.exists(key)) {
-                String payload = jedis.get(key);
+                payload = jedis.get(key);
                 ObjectMapper om = ObjectMapperFactory.getInstance();
 
                 T t = om.readValue(payload, classToReturn);
@@ -405,6 +406,9 @@ public class CacheHandlerImpl implements CacheHandler {
 
             return result;
         } catch (Exception e) {
+            if (payload != null) {
+                LOG.debug("Failed to parse key [" + key + "] with value [" + payload + "]");
+            }
             throw createRunTimeException("Failed to get key [" + key + "]", e);
         }
     }
@@ -419,11 +423,12 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> get(byte[] key, Class<T> classToReturn) {
+        byte[] payload = null;
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<T> result = Optional.empty();
 
             if (jedis.exists(key)) {
-                byte[] payload = jedis.lpop(key);
+                payload = jedis.lpop(key);
                 ObjectMapper om = ObjectMapperFactory.getInstance();
 
                 T t = om.readValue(payload, classToReturn);
@@ -432,17 +437,21 @@ public class CacheHandlerImpl implements CacheHandler {
 
             return result;
         } catch (Exception e) {
+            if (payload != null) {
+                LOG.debug("Failed to parse key [" + key + "] with value [" + payload.toString() + "]");
+            }
             throw createRunTimeException("Failed to get key [" + new String(key) + "]", e);
         }
     }
 
     @Override
     public <T> Optional<List<T>> getList(String key, Class<T> classInList) {
+        String payload = null;
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<List<T>> result = Optional.empty();
 
             if (jedis.exists(key)) {
-                String payload = jedis.get(key);
+                payload = jedis.get(key);
                 ObjectMapper om = ObjectMapperFactory.getInstance();
                 TypeFactory typeFactory = TypeFactory.defaultInstance();
                 List<T> t = om.readValue(payload, typeFactory.constructCollectionType(List.class, classInList));
@@ -452,6 +461,9 @@ public class CacheHandlerImpl implements CacheHandler {
 
             return result;
         } catch (Exception e) {
+            if (payload != null) {
+                LOG.debug("Failed to parse key [" + key + "] with value [" + payload.toString() + "]");
+            }
             throw createRunTimeException("Failed to get key [" + key + "]", e);
         }
     }
@@ -464,7 +476,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<String> rpop(String key) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -475,7 +487,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<byte[]> rpop(byte[] key) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -488,7 +500,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> rpop(String key, Class<T> classToReturn) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -501,7 +513,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> rpop(byte[] key, Class<T> classToReturn) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -512,7 +524,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<String> lpop(String key) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -523,7 +535,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<byte[]> lpop(byte[] key) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -536,7 +548,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> lpop(String key, Class<T> classToReturn) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -549,7 +561,7 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> lpop(byte[] key, Class<T> classToReturn) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     //*************************************************************************************\\
@@ -602,7 +614,7 @@ public class CacheHandlerImpl implements CacheHandler {
 
         LOG.error(message + " / " + errorMessage, t);
 
-        return new RuntimeException(message);
+        return new RuntimeException(message, t);
     }
 
 }
