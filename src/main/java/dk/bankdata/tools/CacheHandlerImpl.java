@@ -192,10 +192,6 @@ public class CacheHandlerImpl implements CacheHandler {
     @Override
     public void rpush(String key, String payload) {
         try (Jedis jedis = factory.getPool().getResource()) {
-            if (jedis.exists(key)) {
-                jedis.del(key);
-            }
-
             jedis.rpush(key, payload);
         } catch (Exception e) {
             throw createRunTimeException("Failed to set key [" + key + "] ", e);
@@ -212,10 +208,6 @@ public class CacheHandlerImpl implements CacheHandler {
     @Override
     public void rpush(String key, Object object) {
         try (Jedis jedis = factory.getPool().getResource()) {
-            if (jedis.exists(key)) {
-                jedis.del(key);
-            }
-
             ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
             String payload = objectMapper.writeValueAsString(object);
 
@@ -235,10 +227,6 @@ public class CacheHandlerImpl implements CacheHandler {
     @Override
     public void lpush(String key, String payload) {
         try (Jedis jedis = factory.getPool().getResource()) {
-            if (jedis.exists(key)) {
-                jedis.del(key);
-            }
-
             jedis.lpush(key, payload);
         } catch (Exception e) {
             throw createRunTimeException("Failed to set key [" + key + "] ", e);
@@ -255,10 +243,6 @@ public class CacheHandlerImpl implements CacheHandler {
     @Override
     public void lpush(String key, Object object) {
         try (Jedis jedis = factory.getPool().getResource()) {
-            if (jedis.exists(key)) {
-                jedis.del(key);
-            }
-
             ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
             String payload = objectMapper.writeValueAsString(object);
 
