@@ -15,7 +15,7 @@ https://search.maven.org/artifact/dk.bankdata.tools/cache
 
 ### Prerequisites
 
-This library needs java 1.8 to function correctly
+This library needs Java 8 or higher to function correctly
 
 [Download here](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 
