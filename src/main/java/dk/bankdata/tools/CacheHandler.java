@@ -17,18 +17,22 @@ public interface CacheHandler {
 
     void lpush(String key, Object payload);
 
+    @Deprecated
     void set(String key, String payload);
 
     void set(String key, String payload, int ttlInSeconds);
 
+    @Deprecated
     void set(String key, Object payload);
 
     void set(String key, Object payload, int ttlInSeconds);
 
+    @Deprecated
     void set(byte[] key, Serializable payload);
 
     void set(byte[] key, Serializable payload, int ttlInSeconds);
 
+    @Deprecated
     void set(String key, List<Object> payload);
 
     void set(String key, List<Object> payload, int ttlInSeconds);
