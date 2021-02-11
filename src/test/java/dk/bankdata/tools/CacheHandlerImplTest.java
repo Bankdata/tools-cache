@@ -1,5 +1,6 @@
 package dk.bankdata.tools;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -12,13 +13,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CacheHandlerImplTest {
-    @InjectMocks
+    @InjectMocks @Spy
     private CacheHandlerImpl cacheHandler;
 
     @Mock
@@ -34,7 +36,7 @@ public class CacheHandlerImplTest {
         when(jedisSentinelPool.getResource()).thenReturn(jedis);
 
         when(jedisSentinelPoolFactory.getPool()).thenReturn(jedisSentinelPool);
-
+        doNothing().when(cacheHandler).isJedisReady();
         Optional<String> s = cacheHandler.get("some-key");
 
         Assert.assertTrue(s.isPresent());
@@ -53,6 +55,7 @@ public class CacheHandlerImplTest {
         when(jedisSentinelPool.getResource()).thenReturn(jedis);
 
         when(jedisSentinelPoolFactory.getPool()).thenReturn(jedisSentinelPool);
+        doNothing().when(cacheHandler).isJedisReady();
 
         Optional<byte[]> b = cacheHandler.get("some-key".getBytes());
 
@@ -70,6 +73,7 @@ public class CacheHandlerImplTest {
         when(jedisSentinelPool.getResource()).thenReturn(jedis);
 
         when(jedisSentinelPoolFactory.getPool()).thenReturn(jedisSentinelPool);
+        doNothing().when(cacheHandler).isJedisReady();
 
         Optional<TestObject> testObject = cacheHandler.get("some-key", TestObject.class);
 
@@ -90,6 +94,7 @@ public class CacheHandlerImplTest {
         when(jedisSentinelPool.getResource()).thenReturn(jedis);
 
         when(jedisSentinelPoolFactory.getPool()).thenReturn(jedisSentinelPool);
+        doNothing().when(cacheHandler).isJedisReady();
 
         Optional<TestObject> testObject = cacheHandler.get(key, TestObject.class);
 
@@ -108,6 +113,7 @@ public class CacheHandlerImplTest {
         when(jedisSentinelPool.getResource()).thenReturn(jedis);
 
         when(jedisSentinelPoolFactory.getPool()).thenReturn(jedisSentinelPool);
+        doNothing().when(cacheHandler).isJedisReady();
 
         Optional<List<PersistentCookie>> list = cacheHandler.getList("some-key", PersistentCookie.class);
 

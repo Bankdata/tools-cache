@@ -3,6 +3,7 @@ package dk.bankdata.tools;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import dk.bankdata.tools.domain.JedisNotReadyException;
 import dk.bankdata.tools.factory.JedisSentinelPoolFactory;
 import dk.bankdata.tools.factory.ObjectMapperFactory;
 import java.io.Serializable;
@@ -12,10 +13,12 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisException;
 
 public class CacheHandlerImpl implements CacheHandler {
     private static final Logger LOG = LoggerFactory.getLogger(CacheHandlerImpl.class);
     private JedisSentinelPoolFactory factory;
+    private boolean initialized;
 
     private CacheHandlerImpl() {
 
@@ -50,7 +53,10 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param object item to cache - Will be converted to json
      */
     @Override
+    @Deprecated
     public void set(String key, Object object) {
+        isJedisReady();
+
         try {
             ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
             String payload = objectMapper.writeValueAsString(object);
@@ -70,6 +76,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public void set(String key, String payload, int ttlInSeconds) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
 
             if (jedis.exists(key)) {
@@ -96,6 +104,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public void set(String key, Object object, int ttlInSeconds) {
+        isJedisReady();
+
         try {
             ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
             String payload = objectMapper.writeValueAsString(object);
@@ -116,6 +126,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public void set(byte[] key, Serializable payload, int ttlInSeconds) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
 
             if (jedis.exists(key)) {
@@ -140,7 +152,10 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param payload list of items to cache
      */
     @Override
+    @Deprecated
     public void set(String key, List<Object> payload) {
+        isJedisReady();
+
         try {
             ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
             String json = objectMapper.writeValueAsString(payload);
@@ -160,6 +175,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public void set(String key, List<Object> payload, int ttlInSeconds) {
+        isJedisReady();
+
         try {
             ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
             String json = objectMapper.writeValueAsString(payload);
@@ -178,6 +195,7 @@ public class CacheHandlerImpl implements CacheHandler {
      * @param payload item to cache
      */
     @Override
+    @Deprecated
     public void set(byte[] key, Serializable payload) {
         this.set(key, payload, 0);
     }
@@ -191,6 +209,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public void rpush(String key, String payload) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             jedis.rpush(key, payload);
         } catch (Exception e) {
@@ -207,6 +227,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public void rpush(String key, Object object) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
             String payload = objectMapper.writeValueAsString(object);
@@ -226,6 +248,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public void lpush(String key, String payload) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             jedis.lpush(key, payload);
         } catch (Exception e) {
@@ -242,6 +266,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public void lpush(String key, Object object) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             ObjectMapper objectMapper = ObjectMapperFactory.getInstance();
             String payload = objectMapper.writeValueAsString(object);
@@ -259,6 +285,8 @@ public class CacheHandlerImpl implements CacheHandler {
 
     @Override
     public long llen(String key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             if (jedis.exists(key)) {
                 return jedis.llen(key);
@@ -272,6 +300,8 @@ public class CacheHandlerImpl implements CacheHandler {
 
     @Override
     public long llen(byte[] key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             if (jedis.exists(key)) {
                 return jedis.llen(key);
@@ -296,6 +326,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public boolean exists(String key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             return jedis.exists(key);
         } catch (Exception e) {
@@ -311,6 +343,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public boolean exists(byte[] key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             return jedis.exists(key);
         } catch (Exception e) {
@@ -330,6 +364,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<String> get(String key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<String> result = Optional.empty();
 
@@ -352,6 +388,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<byte[]> get(byte[] key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<byte[]> result = Optional.empty();
 
@@ -376,6 +414,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> get(String key, Class<T> classToReturn) {
+        isJedisReady();
+
         String payload = null;
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<T> result = Optional.empty();
@@ -407,6 +447,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> get(byte[] key, Class<T> classToReturn) {
+        isJedisReady();
+
         byte[] payload = null;
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<T> result = Optional.empty();
@@ -430,6 +472,8 @@ public class CacheHandlerImpl implements CacheHandler {
 
     @Override
     public <T> Optional<List<T>> getList(String key, Class<T> classInList) {
+        isJedisReady();
+
         String payload = null;
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<List<T>> result = Optional.empty();
@@ -460,6 +504,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<String> rpop(String key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<String> result = Optional.empty();
 
@@ -482,6 +528,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<byte[]> rpop(byte[] key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<byte[]> result = Optional.empty();
 
@@ -506,6 +554,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> rpop(String key, Class<T> classToReturn) {
+        isJedisReady();
+
         String payload = null;
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<T> result = Optional.empty();
@@ -537,6 +587,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> rpop(byte[] key, Class<T> classToReturn) {
+        isJedisReady();
+
         byte[] payload = null;
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<T> result = Optional.empty();
@@ -566,6 +618,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<String> lpop(String key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<String> result = Optional.empty();
 
@@ -588,6 +642,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public Optional<byte[]> lpop(byte[] key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<byte[]> result = Optional.empty();
 
@@ -612,6 +668,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> lpop(String key, Class<T> classToReturn) {
+        isJedisReady();
+
         String payload = null;
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<T> result = Optional.empty();
@@ -643,6 +701,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public <T> Optional<T> lpop(byte[] key, Class<T> classToReturn) {
+        isJedisReady();
+
         byte[] payload = null;
         try (Jedis jedis = factory.getPool().getResource()) {
             Optional<T> result = Optional.empty();
@@ -675,6 +735,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public void delete(String key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
 
             if (jedis.exists(key)) {
@@ -690,6 +752,8 @@ public class CacheHandlerImpl implements CacheHandler {
      */
     @Override
     public void delete(byte[] key) {
+        isJedisReady();
+
         try (Jedis jedis = factory.getPool().getResource()) {
 
             if (jedis.exists(key)) {
@@ -704,7 +768,39 @@ public class CacheHandlerImpl implements CacheHandler {
     @Override
     public void initialize() {
         try (Jedis jedis = factory.getPool().getResource()) {
-            jedis.exists("Initialization-key");
+            jedis.ping();
+
+        } catch (JedisException e) {
+            // Something might be wrong with Redis - retry every 10s until success
+            LOG.error("[TOOLS-CACHE] Unable to access Redis - Will enter retry mode ..." + e.getMessage());
+            Runnable runnable = () -> {
+                long counter = 0;
+
+                while (!initialized) {
+                    counter++;
+                    LOG.error("[TOOLS-CACHE] Retry access #" + counter);
+
+                    try (Jedis jedis = factory.getPool().getResource()) {
+                        jedis.ping();
+                        initialized = true;
+                    } catch (JedisException e1) {
+                        try {
+                            Thread.sleep(10000);
+                        } catch (InterruptedException interruptedException) {
+                            throw new RuntimeException("Sleep failed");
+                        }
+                    }
+                }
+            };
+
+            Thread thread = new Thread(runnable);
+            thread.start();
+        }
+    }
+
+    protected void isJedisReady() {
+        if (!initialized) {
+            throw createNotInitializedException();
         }
     }
 
@@ -715,6 +811,10 @@ public class CacheHandlerImpl implements CacheHandler {
         LOG.error(message + " / " + errorMessage, t);
 
         return new RuntimeException(message, t);
+    }
+
+    private JedisNotReadyException createNotInitializedException() {
+        return new JedisNotReadyException("Jedis is not initialized yet, so can't be accessed. Please try again later.");
     }
 
 }
