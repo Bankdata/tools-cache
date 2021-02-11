@@ -772,8 +772,14 @@ public class CacheHandlerImpl implements CacheHandler {
 
         } catch (JedisException e) {
             // Something might be wrong with Redis - retry every 10s until success
+            LOG.error("[TOOLS-CACHE] Unable to access Redis - Will enter retry mode ..." + e.getMessage());
             Runnable runnable = () -> {
+                long counter = 0;
+
                 while (!initialized) {
+                    counter++;
+                    LOG.error("[TOOLS-CACHE] Retry access #" + counter);
+
                     try (Jedis jedis = factory.getPool().getResource()) {
                         jedis.ping();
                         initialized = true;
