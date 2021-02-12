@@ -772,7 +772,7 @@ public class CacheHandlerImpl implements CacheHandler {
 
         } catch (Exception e) {
             // Something might be wrong with Redis - retry every 10s until success
-            LOG.error("[TOOLS-CACHE] Unable to access Redis - Will enter retry mode ..." + e.getMessage());
+            LOG.error("[TOOLS-CACHE] Unable to access Redis - Will enter retry mode ...");
             Runnable runnable = () -> {
                 long counter = 0;
 
