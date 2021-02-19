@@ -18,7 +18,7 @@ import redis.clients.jedis.exceptions.JedisException;
 public class CacheHandlerImpl implements CacheHandler {
     private static final Logger LOG = LoggerFactory.getLogger(CacheHandlerImpl.class);
     private JedisSentinelPoolFactory factory;
-    private boolean initialized;
+    protected boolean initialized;
 
     private CacheHandlerImpl() {
 

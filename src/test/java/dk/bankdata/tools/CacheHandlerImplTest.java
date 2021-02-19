@@ -133,4 +133,19 @@ public class CacheHandlerImplTest {
     public void shouldThrowRedisNotInitializedException() {
         cacheHandler.get("error");
     }
+
+    @Test
+    public void shouldInitializeCorrectly() {
+        Jedis jedis = mock(Jedis.class);
+        when(jedis.exists("Initialization-key")).thenReturn(false);
+
+        JedisSentinelPool jedisSentinelPool = mock(JedisSentinelPool.class);
+        when(jedisSentinelPool.getResource()).thenReturn(jedis);
+
+        when(jedisSentinelPoolFactory.getPool()).thenReturn(jedisSentinelPool);
+
+        cacheHandler.initialize();
+
+        Assert.assertTrue(cacheHandler.initialized);
+    }
 }
