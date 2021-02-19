@@ -814,7 +814,8 @@ public class CacheHandlerImpl implements CacheHandler {
     }
 
     private JedisNotReadyException createNotInitializedException() {
-        return new JedisNotReadyException("Jedis is not initialized yet, so can't be accessed. Could indicate there is an issue with Redis. Please try again later.");
+        return new JedisNotReadyException("Jedis is not initialized yet, " +
+                "so can't be accessed. Could indicate there is an issue with Redis. Please try again later.");
     }
 
 }
