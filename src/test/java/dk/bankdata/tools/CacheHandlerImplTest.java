@@ -4,6 +4,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import dk.bankdata.tools.domain.JedisNotReadyException;
 import dk.bankdata.tools.factory.JedisSentinelPoolFactory;
 import dk.bankdata.tools.objects.PersistentCookie;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.MockitoJUnitRunner;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
@@ -128,4 +130,8 @@ public class CacheHandlerImplTest {
         Assert.assertEquals("some-value-2", persistentCookies.get(1).getValue());
     }
 
+    @Test(expected = JedisNotReadyException.class)
+    public void shouldThrowRedisNotInitializedException() {
+        cacheHandler.get("error");
+    }
 }
