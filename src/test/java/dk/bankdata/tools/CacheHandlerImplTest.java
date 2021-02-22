@@ -4,6 +4,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import dk.bankdata.tools.domain.JedisNotReadyException;
 import dk.bankdata.tools.factory.JedisSentinelPoolFactory;
 import dk.bankdata.tools.objects.PersistentCookie;
 import java.util.List;
@@ -128,4 +129,23 @@ public class CacheHandlerImplTest {
         Assert.assertEquals("some-value-2", persistentCookies.get(1).getValue());
     }
 
+    @Test(expected = JedisNotReadyException.class)
+    public void shouldThrowRedisNotInitializedException() {
+        cacheHandler.get("error");
+    }
+
+    @Test
+    public void shouldInitializeCorrectlyWhenRedisIsAlreadyUp() {
+        Jedis jedis = mock(Jedis.class);
+        when(jedis.exists("Initialization-key")).thenReturn(false);
+
+        JedisSentinelPool jedisSentinelPool = mock(JedisSentinelPool.class);
+        when(jedisSentinelPool.getResource()).thenReturn(jedis);
+
+        when(jedisSentinelPoolFactory.getPool()).thenReturn(jedisSentinelPool);
+
+        cacheHandler.initialize();
+
+        Assert.assertTrue(cacheHandler.initialized);
+    }
 }

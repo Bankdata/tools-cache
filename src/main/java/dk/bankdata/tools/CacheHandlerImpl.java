@@ -18,7 +18,7 @@ import redis.clients.jedis.exceptions.JedisException;
 public class CacheHandlerImpl implements CacheHandler {
     private static final Logger LOG = LoggerFactory.getLogger(CacheHandlerImpl.class);
     private JedisSentinelPoolFactory factory;
-    private boolean initialized;
+    protected boolean initialized;
 
     private CacheHandlerImpl() {
 
@@ -768,8 +768,8 @@ public class CacheHandlerImpl implements CacheHandler {
     @Override
     public void initialize() {
         try (Jedis jedis = factory.getPool().getResource()) {
-            jedis.ping();
-
+            jedis.exists("Initialization-key");
+            initialized = true;
         } catch (Exception e) {
             // Something might be wrong with Redis - retry every 10s until success
             LOG.error("[TOOLS-CACHE] Unable to access Redis - Will enter retry mode ...");
@@ -781,7 +781,7 @@ public class CacheHandlerImpl implements CacheHandler {
                     LOG.error("[TOOLS-CACHE] Retry access #" + counter);
 
                     try (Jedis jedis = factory.getPool().getResource()) {
-                        jedis.ping();
+                        jedis.exists("Initialization-key");
                         initialized = true;
                     } catch (JedisException e1) {
                         try {
@@ -814,7 +814,8 @@ public class CacheHandlerImpl implements CacheHandler {
     }
 
     private JedisNotReadyException createNotInitializedException() {
-        return new JedisNotReadyException("Jedis is not initialized yet, so can't be accessed. Please try again later.");
+        return new JedisNotReadyException("Jedis is not initialized yet, " +
+                "so can't be accessed. Could indicate there is an issue with Redis. Please try again later.");
     }
 
 }
