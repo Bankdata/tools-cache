@@ -135,7 +135,7 @@ public class CacheHandlerImplTest {
     }
 
     @Test
-    public void shouldInitializeCorrectly() {
+    public void shouldInitializeCorrectlyWhenRedisIsAlreadyUp() {
         Jedis jedis = mock(Jedis.class);
         when(jedis.exists("Initialization-key")).thenReturn(false);
 
