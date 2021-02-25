@@ -16,9 +16,10 @@ public class CacheHandlerProducer {
     private Environment environment;
 
     @Inject
-    JedisSentinelPoolFactory jedisSentinelPoolFactory;
+    private JedisSentinelPoolFactory jedisSentinelPoolFactory;
 
     @Produces
+    @ApplicationScoped
     public CacheHandler get() {
         if (environment.getProfile().equals(Profile.LOCAL)) {
             return new CacheHandlerStub();
