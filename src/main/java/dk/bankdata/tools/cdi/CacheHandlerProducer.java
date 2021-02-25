@@ -1,9 +1,10 @@
 package dk.bankdata.tools.cdi;
 
 import dk.bankdata.tools.CacheHandler;
+import dk.bankdata.tools.CacheHandlerImpl;
+import dk.bankdata.tools.CacheHandlerStub;
 import dk.bankdata.tools.domain.Environment;
 import dk.bankdata.tools.domain.Profile;
-import dk.bankdata.tools.factory.CacheHandlerFactory;
 import dk.bankdata.tools.factory.JedisSentinelPoolFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -17,15 +18,13 @@ public class CacheHandlerProducer {
     @Inject
     private JedisSentinelPoolFactory jedisSentinelPoolFactory;
 
-    @Inject
-    private CacheHandlerFactory cacheHandlerFactory;
-
     @Produces
+    @ApplicationScoped
     public CacheHandler get() {
         if (environment.getProfile().equals(Profile.LOCAL)) {
-            return cacheHandlerFactory.getCacheHandlerStub();
+            return new CacheHandlerStub();
         }
 
-        return cacheHandlerFactory.getCacheHandlerImpl(jedisSentinelPoolFactory);
+        return new CacheHandlerImpl(jedisSentinelPoolFactory);
     }
 }
